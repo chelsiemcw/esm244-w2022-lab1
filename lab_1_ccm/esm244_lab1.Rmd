@@ -1,0 +1,58 @@
+---
+title: "ESM 244 Lab 1"
+author: "Chelsie McWhorter"
+date: "1/6/2022"
+output: html_document
+---
+
+```{r setup, include=TRUE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+library(tidyverse)
+library(here)
+library(sf)
+library(tmap)
+#update.packages(ask = FALSE)
+```
+
+##read in the data
+
+```{r}
+sf_trees <- read_csv(here("data", "sf_trees","sf_trees.csv"),
+                     show_col_types = FALSE)
+```
+
+### Example 1: wrangling and ggplot review
+
+```{r}
+## method 1: groupby() %>%  summarize()
+method1 <- sf_trees %>% 
+  group_by(legal_status) %>% 
+  summarize(tree_count = n())
+
+##method 2: new functions
+top5status <- sf_trees %>% 
+  count(legal_status) %>%  #pseudo groupby function 
+  drop_na(legal_status) %>%  #drops any row with an NA in it, so we want to specify to only drop legalsts
+  rename(tree_count = n) %>% 
+  relocate(tree_count) %>% #default is to move it to the front
+  slice_max(tree_count, n = 5) %>%  #pick out the highest up to what numberhere we'll pick 5
+  arrange(-tree_count) #add - for highest to lowest
+
+#these ^ get you to the same place
+```
+
+
+### Make a graph with the top 5 I just created
+
+```{r}
+top5_graph <- ggplot(data = top5status, aes(x = fct_reorder(legal_status, -tree_count), y = tree_count)) + 
+  geom_col(fill = 'darkgreen') +
+  labs(x = "Legal Status", 
+       y= "Tree Count") +
+  coord_flip() + #flips the labels
+  theme_minimal()
+
+top5_graph #out of order, lets make them go biggest to smallest, not alphaberical order
+```
+
+### More Wrangling - Example 2: Keep only observatopns where legal stats is "Permitted Site" and caretaker is "MTA" 
