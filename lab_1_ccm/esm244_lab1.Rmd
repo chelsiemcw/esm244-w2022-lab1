@@ -56,3 +56,35 @@ top5_graph #out of order, lets make them go biggest to smallest, not alphaberica
 ```
 
 ### More Wrangling - Example 2: Keep only observatopns where legal stats is "Permitted Site" and caretaker is "MTA" 
+
+
+```{r}
+
+# sf_trees$legal_status %>% unique() #what options for legal status are there? are there any duplicates?
+
+#unique(sf_trees$caretaker) #same as above but using a different command 
+
+permitted_data <- sf_trees %>% 
+  filter(legal_status == "Permitted Site", caretaker == "MTA") #the comma (or &) means both conditions have to be met in order to keep the line, in other words they BOTH have to be true. If we wanted one or the other than we used | for or
+```
+
+### Example 3: Only keep blackwood acacia trees, and then only keep columnc of legal status "date", "latitude", longitute, and store as blackwood_acacia
+
+```{r}
+blackwood_acaia <- sf_trees %>% 
+  filter(str_detect(species, "Blackwood Acacia")) %>% 
+  select(legal_status, date, lat = latitude, long = longitude)
+
+###Make a graph of locations
+ggplot(data = blackwood_acaia, aes(x = long, y = lat)) +
+  geom_point(color = 'darkgreen') #currently R doesn't know its spatial, its just graphhing 
+```
+
+
+
+
+
+
+
+
+
