@@ -80,10 +80,42 @@ ggplot(data = blackwood_acaia, aes(x = long, y = lat)) +
   geom_point(color = 'darkgreen') #currently R doesn't know its spatial, its just graphhing 
 ```
 
+### Eample 4: Use `tidyr::separate` to break apart a column. Here we'll use the species column. 
+
+```{r}
+sf_trees_sep <- sf_trees %>% 
+  separate(species, into =c('species_scientific', 'species_common'), sep = ' :: ')
+```
 
 
 
 
+### Example 5: `tidyr::unite` to bring things together
+
+
+```{r}
+ex5 <- sf_trees %>% 
+  unite('id_status', tree_id, legal_status, sep = '_COOL_')
+
+```
+
+## Part 2: Make Some Maps
+
+### Step 1: Covert lat & long to spatial points, using `st_as_sf()`
+
+```{r}
+##creating spatial object
+blackwood_sf <- blackwood_acaia %>% 
+  drop_na(lat, long) %>% 
+  st_as_sf(coords = c('long', 'lat'))
+
+### we need to tell r what hte coord red system is
+st_crs(blackwood_sf) <- 4326 #epsg for WGS84
+
+ggplot(data = blackwood_sf) +
+  geom_sf(color = 'darkgreen') +
+  theme_minimal()
+```
 
 
 
