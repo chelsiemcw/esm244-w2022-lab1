@@ -117,6 +117,37 @@ ggplot(data = blackwood_sf) +
   theme_minimal()
 ```
 
+Now R knows these are spatial data, and as such, we can now insert a map under these data to give it more context. 
+
+### Insert a map into this spatial object. 
+
+```{r}
+sf_map <- read_sf(here('data', 'sf_map', "tl_2017_06075_roads.shp"))
+
+# st_crs(sf_map) - this lets us look at the spatial data associated with an object 
+
+sf_map_transform <- st_transform(sf_map, 4326)
+
+#view it:
+ggplot(data= sf_map_transform) +
+  geom_sf()
+
+```
+
+
+### Combine map and data into one:
+
+```{r}
+ggplot() +
+  geom_sf(data = sf_map,
+          size = 0.1, 
+          color = "darkgrey") +
+  geom_sf(data = blackwood_sf, 
+          color = "red", 
+          size = 0.5) +
+  theme_void() +
+  labs(title = "Blackwood acacias in San Francisco")
+```
 
 
 
